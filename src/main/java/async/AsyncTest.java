@@ -50,13 +50,4 @@ class AsyncTest {
         return tuple;
       });
   }
-
-  public static List<Ceo> get(List<Ceo> list, String id ) {
-    for(Ceo ceo : list){
-      if(ceo.id.compareTo(id) != 0){
-        list = list.remove(ceo);
-      }
-    }
-    return list;
-  }
 }
