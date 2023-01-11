@@ -4,16 +4,8 @@ import io.vavr.collection.List;
 import io.vavr.*;
 import io.vavr.control.Option;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import javax.lang.model.element.Element;
-import javax.naming.spi.DirStateFactory.Result;
 
 /**
  * You should complete the function in this class
@@ -49,13 +41,14 @@ class AsyncTest {
   }
 
 
-  public static CompletableFuture<Tuple2<Option<Ceo>, Option<Enterprise>>> getCEOAndEnterprise(String ceo_id, List<Enterprise> eList, List<Ceo> cList) {
-    Option oCeo = cList.isEmpty() ? Option.none() : Option.of(cList.get());
-    Option oEnterprise = eList.isEmpty() ? Option.none() : Option.of(eList.get());
-    Tuple2<Option<Ceo>, Option<Enterprise>> tuple;
-    return CompletableFuture.supplyAsync(() -> {
-      return tuple.of(oCeo, oEnterprise);
-    })
+  public static CompletableFuture<Tuple2<Option<Ceo>, Option<Enterprise>>> getCEOAndEnterprise(String ceo_id, List<Enterprise> eList, List<Ceo> cList) throws InterruptedException, ExecutionException {
+    Option<Ceo> oCeo = cList.isEmpty() ? Option.none() : Option.of(getCeoById(ceo_id, cList).get().get());
+    Option<Enterprise> oEnterprise = eList.isEmpty() ? Option.none() : Option.of(getEnterpriseByCeoId(ceo_id, eList).get().get());
+      return CompletableFuture.supplyAsync(() -> {
+        return new Tuple2<Option<Ceo>, Option<Enterprise>>(oCeo, oEnterprise);
+      }).thenApply(tuple -> {
+        return tuple;
+      });
   }
 
   public static List<Ceo> get(List<Ceo> list, String id ) {
@@ -65,13 +58,5 @@ class AsyncTest {
       }
     }
     return list;
-  }
-
-
-  public static void main(String[] args) throws InterruptedException, ExecutionException{
-    List<String> l = List.of("oui");
-    Option oCeo = l.isEmpty() ? Option.none() : Option.of(l.get());
-
-    System.out.println(oCeo);
   }
 }
